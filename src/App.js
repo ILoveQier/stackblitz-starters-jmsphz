@@ -12,7 +12,7 @@
  * Write your perfect code!
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 function Card({
   title,
@@ -45,24 +45,23 @@ function Card({
 export default function Page() {
   const [cards, setCards] = useState([]);
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     var data = await fetch(
       'https://my-json-server.typicode.com/savayer/demo/posts'
     );
     let jsons = await data.json();
-
     let newData = [];
     jsons.map((item) => {
-      let obj = {};
-      obj.id = item.id;
-      obj.title = item.title;
-      obj.link_title = item.link_title;
-      obj.link = item.link;
-      obj.text = item?.body ? item?.body?.en.substr(0, 50) + '...' : '';
-      newData.push(obj);
+      newData.push({
+        id: item.id,
+        title: item.title,
+        link_title: item.link_title,
+        link: item.link,
+        text: item?.body ? item?.body?.en.substr(0, 50) + '...' : '',
+      });
     });
     setCards(newData);
-  }
+  }, []);
 
   useEffect(() => {
     fetchData();
